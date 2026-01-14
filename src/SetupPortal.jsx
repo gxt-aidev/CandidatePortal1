@@ -77,11 +77,23 @@ export default function SetupPortal() {
 
         if (!res.ok || !data.interviewId) {
           const reason = data.error || "unknown";
-          setLinkError(
-            reason === "expired"
-              ? "This interview link has expired."
-              : "We couldn’t validate your interview link."
-          );
+          switch (reason) {
+            case "TOKEN_EXPIRED":
+              setLinkError("This interview link has expired.");
+              break;
+            case "TOKEN_USED":
+              setLinkError("This interview link has already been used.");
+              break;
+            case "INTERVIEW_CLOSED":
+              setLinkError("This interview is no longer accepting responses.");
+              break;
+            case "TOKEN_INVALID":
+              setLinkError("This interview link is invalid.");
+              break;
+            default:
+              setLinkError("We couldn’t validate your interview link.");
+          }
+
           setLoading(false);
           return;
         }
