@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interview Link Expired – Dvar</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lottie -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.9.6/lottie.min.js"></script>
+
+  <style>
+    body {
+      font-family: "Inter", sans-serif;
+      background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 100%);
+      min-height: 100vh;
+    }
+
+    .fade-in {
+      animation: fadeIn 0.8s ease-out forwards;
+      opacity: 0;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .floating {
+      animation: floating 3s ease-in-out infinite;
+    }
+
+    @keyframes floating {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0); }
+    }
+  </style>
+</head>
+
+<body class="flex items-center justify-center px-6">
+
+  <div class="max-w-lg w-full bg-white rounded-2xl shadow-xl p-10 fade-in text-center border border-indigo-100">
+
+    <!-- Animation -->
+    <div id="lottieContainer" class="mx-auto h-44 w-44 floating mb-6"></div>
+
+    <h1 class="text-3xl font-bold text-gray-900 mb-3">
+      Interview Link Expired
+    </h1>
+
+    <p class="text-gray-600 leading-relaxed mb-6">
+      The interview link you’re trying to access is no longer valid.
+    </p>
+
+    <ul class="text-left text-gray-700 text-sm space-y-2 mb-6">
+      <li>• The link may have expired for security reasons.</li>
+      <li>• The interview may have been closed by the administrator.</li>
+      <li>• This link may already have been used.</li>
+    </ul>
+
+    <p class="text-gray-500 text-sm mb-8">
+      If you believe this is a mistake, please contact the  
+      <span class="font-semibold text-indigo-600">Dvar Administration</span>  
+      team and share a screenshot of this page.
+    </p>
+
+    <a
+      href="https://dvar.globalxperts.org"
+      class="inline-block bg-indigo-600 text-white px-6 py-3 rounded-lg text-sm font-semibold shadow hover:bg-indigo-700 transition"
+    >
+      Return to Dvar
+    </a>
+
+  </div>
+
+  <script>
+    lottie.loadAnimation({
+      container: document.getElementById("lottieContainer"),
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+      path: "https://assets9.lottiefiles.com/private_files/lf30_editor_bpuvcpnr.json"
+    });
+  </script>
+
+</body>
+</html>
