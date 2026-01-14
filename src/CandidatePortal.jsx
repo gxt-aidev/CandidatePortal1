@@ -7,9 +7,16 @@ import { FaceDetector, FilesetResolver } from "@mediapipe/tasks-vision";
 
 
 /** ================== ENV / CONFIG ================== **/
-// Use the protected external endpoint with API key
-const INTERVIEWS_API = "https://hirexpert-1ecv.onrender.com/api/external/interviews";
-const INTERVIEWS_API_KEY = "FetchingInterviewDetails@321$";
+// Base API (new)
+const API_BASE = "https://dvar.globalxperts.org";
+
+// Endpoints
+const INTERVIEWS_API = `${API_BASE}/api/external/interviews`;
+const CONSUME_TOKEN_API = `${API_BASE}/api/consume-token`;
+
+const INTERVIEWS_API_KEY = "supersecret123";
+
+
 
 const UPLOAD_WEBHOOK = import.meta.env.VITE_UPLOAD_WEBHOOK; // https://n8n…/webhook/candidate-upload
 
@@ -132,14 +139,12 @@ export default function CandidatePortal() {
   
     (async () => {
       try {
-        const res = await fetch(
-          "https://hirexpert-1ecv.onrender.com/api/consume-token",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ token }),
-          }
-        );
+        const res = await fetch(CONSUME_TOKEN_API, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token }),
+        });
+
   
         const data = await res.json().catch(() => ({}));
   
