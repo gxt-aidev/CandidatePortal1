@@ -437,7 +437,7 @@ export default function CandidatePortal() {
 
 
 
-  const [answerMeta, setAnswerMeta] = useState({}); // { qid: { warnings:[{type,ts}] } }
+  const [rerecordUsed, setRerecordUsed] = useState({});
   const [banners, setBanners] = useState([]);
   const pushBanner = (msg) =>
     setBanners((b) => [
@@ -527,7 +527,16 @@ export default function CandidatePortal() {
           interviewId: item.id,
           title: item.title || "Interview",
           questions: qs,
+        
+          // NEW: rerecord config (Option A - global)
+          allowRerecord: Boolean(item.allowRerecord),
+          maxRerecordsPerQuestion: Math.max(
+            0,
+            Number(item.maxRerecordsPerQuestion ?? 0) || 0
+          ),
         });
+
+        
         setTimeLeft(qs[0]?.timeLimit || 120);
 
         // restore progress
@@ -552,6 +561,8 @@ export default function CandidatePortal() {
               setTabSwitchCount(saved.tabSwitchCount);
             if (saved.answerMeta && typeof saved.answerMeta === "object")
               setAnswerMeta(saved.answerMeta);
+            if (saved.rerecordUsed && typeof saved.rerecordUsed === "object")
+              setRerecordUsed(saved.rerecordUsed);
           }
         } catch {
           // ignore restore errors
@@ -584,13 +595,14 @@ export default function CandidatePortal() {
           currentIndex: idx,
           tabSwitchCount,
           answerMeta,
+          rerecordUsed, // NEW
           savedAt: Date.now(),
         })
       );
     } catch {
       // ignore
     }
-  }, [interview?.interviewId, candidate, idx, tabSwitchCount, answerMeta]);
+  }, [interview?.interviewId, candidate, idx, tabSwitchCount, answerMeta, rerecordUsed]);
   
 
   /** ================== Fullscreen on entry with gesture fallback ================== **/
@@ -1028,6 +1040,7 @@ export default function CandidatePortal() {
           currentIndex: nextIndex,
           tabSwitchCount,
           answerMeta,
+          rerecordUsed, // NEW
           savedAt: Date.now(),
         })
       );
@@ -1147,7 +1160,17 @@ export default function CandidatePortal() {
     form.append("total_warnings", String(totalWarnings));
     form.append("question_warning_count", String(thisQWarnings.length));
     form.append("warnings_json", JSON.stringify(thisQWarnings));
+    // NEW: rerecord enforcement hints (backend should still verify independently)
+    const allow = Boolean(interview?.allowRerecord);
+    const max = Math.max(0, Number(interview?.maxRerecordsPerQuestion ?? 0) || 0);
+    const used = (rerecordUsed?.[currentQ.id] ?? 0) || 0;
+    
+    form.append("allow_rerecord", String(allow));
+    form.append("max_rerecords_per_question", String(max));
+    form.append("rerecord_used_for_question", String(used));
+
     form.append("file", recordedBlob, `${currentQ.id}.${ext}`);
+    
 
     try {
       const res = await fetch(UPLOAD_WEBHOOK, {
@@ -1435,19 +1458,41 @@ export default function CandidatePortal() {
                         >
                           Looks good — Upload
                         </button>
-                        <button
-                          className="hx-btn ghost"
-                          onClick={async () => {
-                            if (recordingUrl)
-                              URL.revokeObjectURL(recordingUrl);
-                            setRecordedBlob(null);
-                            setRecordingUrl("");
-                            await ensurePreview();
-                            setStage("question");
-                          }}
-                        >
-                          Re-record
-                        </button>
+                       
+                        {(() => {
+                          const allow = Boolean(interview?.allowRerecord);
+                          const max = Math.max(0, Number(interview?.maxRerecordsPerQuestion ?? 0) || 0);
+                          const used = (rerecordUsed?.[currentQ?.id] ?? 0) || 0;
+                        
+                          // If allow=false OR max=0 => hide (cleaner UX)
+                          if (!allow || max <= 0) return null;
+                        
+                          // If exhausted => hide (cleaner UX)
+                          if (used >= max) return null;
+                        
+                          return (
+                            <button
+                              className="hx-btn ghost"
+                              onClick={async () => {
+                                // consume 1 rerecord attempt for this question
+                                const qid = currentQ?.id || `q${idx + 1}`;
+                                setRerecordUsed((prev) => ({
+                                  ...prev,
+                                  [qid]: (prev?.[qid] ?? 0) + 1,
+                                }));
+                        
+                                if (recordingUrl) URL.revokeObjectURL(recordingUrl);
+                                setRecordedBlob(null);
+                                setRecordingUrl("");
+                                await ensurePreview();
+                                setStage("question");
+                              }}
+                            >
+                              Re-record
+                            </button>
+                          );
+                        })()}
+
                       </>
                     )}
                   </div>
