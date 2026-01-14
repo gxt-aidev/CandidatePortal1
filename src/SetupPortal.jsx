@@ -4,6 +4,9 @@ import "./App.css";
 import gxLogo from "./assets/new-globalxperts-logo.png";
 
 const SETUP_WEBHOOK = import.meta.env.VITE_SETUP_WEBHOOK;
+const API_BASE = "https://dvar.globalxperts.org";
+const SETUP_VALIDATE_API = `${API_BASE}/api/setup`;
+
 
 function useQuery() {
   const p = new URLSearchParams(window.location.search);
@@ -60,7 +63,7 @@ export default function SetupPortal() {
 
       try {
         const res = await fetch(
-          `https://hirexpert-1ecv.onrender.com/api/setup?token=${token}`,
+          `${SETUP_VALIDATE_API}?token=${encodeURIComponent(token)}`,
           { mode: "cors" }
         );
 
