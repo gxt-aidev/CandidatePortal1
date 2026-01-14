@@ -78,18 +78,21 @@ export default function SetupPortal() {
         if (!res.ok || !data.interviewId) {
           const reason = data.error || "unknown";
           switch (reason) {
-            case "TOKEN_EXPIRED":
-              setLinkError("This interview link has expired.");
-              break;
-            case "TOKEN_USED":
-              setLinkError("This interview link has already been used.");
-              break;
-            case "INTERVIEW_CLOSED":
-              setLinkError("This interview is no longer accepting responses.");
-              break;
-            case "TOKEN_INVALID":
-              setLinkError("This interview link is invalid.");
-              break;
+          case "TOKEN_EXPIRED":
+            window.location.replace("/interview-expired.html");
+            return;
+          
+          case "TOKEN_USED":
+            window.location.replace("/interview-expired.html");
+            return;
+          
+          case "INTERVIEW_CLOSED":
+            window.location.replace("/interview-expired.html");
+            return;
+          
+          case "TOKEN_INVALID":
+            window.location.replace("/interview-expired.html");
+            return;
             default:
               setLinkError("We couldn’t validate your interview link.");
           }
