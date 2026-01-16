@@ -114,6 +114,8 @@ export default function CandidatePortal() {
   const params = new URLSearchParams(window.location.search);
   const interviewId = params.get("id") || "";
   const token = params.get("token") || "";
+  const [answerMeta, setAnswerMeta] = useState({}); // { qid: { warnings:[{type,ts}] } }
+
 
   // -------- Consume Interview Token (one-time use) --------
   useEffect(() => {
